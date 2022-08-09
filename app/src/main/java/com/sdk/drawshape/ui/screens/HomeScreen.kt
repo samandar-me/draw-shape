@@ -1,32 +1,33 @@
 package com.sdk.drawshape.ui.screens
 
 import android.graphics.Bitmap
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asAndroidBitmap
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavController
+import com.sdk.drawshape.MainActivity
 import com.sdk.drawshape.drawbox.DrawBox
 import com.sdk.drawshape.drawbox.rememberDrawController
 import com.sdk.drawshape.local.convertToOldColor
 import com.sdk.drawshape.ui.components.ControlsBar
 import com.sdk.drawshape.ui.components.CustomSeekbar
+import com.sdk.drawshape.ui.theme.Purple500
 import io.ak1.rangvikalp.RangVikalp
 import io.ak1.rangvikalp.defaultSelectedColor
 
 
-/**
- * Created by akshay on 29/12/21
- * https://ak1.io
- */
-
 @Composable
 fun HomeScreen(save: (Bitmap) -> Unit) {
+    val activity = (LocalContext.current as? MainActivity)
     val undoVisibility = remember { mutableStateOf(false) }
     val redoVisibility = remember { mutableStateOf(false) }
     val colorBarVisibility = remember { mutableStateOf(false) }
@@ -37,6 +38,7 @@ fun HomeScreen(save: (Bitmap) -> Unit) {
     val currentSize = remember { mutableStateOf(10) }
     val colorIsBg = remember { mutableStateOf(false) }
     val drawController = rememberDrawController()
+    val openDialog = remember { mutableStateOf(false) }
 
     Box {
         Column {
@@ -46,7 +48,7 @@ fun HomeScreen(save: (Bitmap) -> Unit) {
                 modifier = Modifier
                     .fillMaxSize()
                     .weight(1f, fill = false),
-                bitmapCallback = { imageBitmap, error ->
+                bitmapCallback = { imageBitmap, _ ->
                     imageBitmap?.let {
                         save(it.asAndroidBitmap())
                     }
@@ -110,14 +112,45 @@ fun HomeScreen(save: (Bitmap) -> Unit) {
                 drawController.changeStrokeWidth(it.toFloat())
             }
         }
-
     }
-}
-
-@Preview
-@Composable
-fun HomePrev() {
-    HomeScreen {
-
+    BackHandler {
+        if (drawController.pathList.size != 0)
+            openDialog.value = true
+        else
+            activity?.finish()
+    }
+    if (openDialog.value) {
+        MaterialTheme {
+            Column {
+                AlertDialog(onDismissRequest = {
+                    openDialog.value = false
+                },
+                    title = { Text(text = "Save") },
+                    text = { Text(text = "Save changes to gallery?") },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                openDialog.value = false
+                                drawController.saveBitmap()
+                            },
+                            colors = ButtonDefaults.buttonColors(backgroundColor = Purple500)
+                        ) {
+                            Text(text = "Yes", color = Color.White)
+                        }
+                    },
+                    dismissButton = {
+                        Button(
+                            onClick = {
+                                openDialog.value = false
+                                activity?.finish()
+                            },
+                            colors = ButtonDefaults.buttonColors(backgroundColor = Purple500)
+                        ) {
+                            Text(text = "No", color = Color.White)
+                        }
+                    }
+                )
+            }
+        }
     }
 }

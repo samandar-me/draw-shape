@@ -72,7 +72,7 @@ fun Splash(alpha: Float) {
             Text(
                 text = "Draw Shapes",
                 fontFamily = FontFamily.Cursive,
-                fontSize = 25.sp,
+                fontSize = 28.sp,
                 textAlign = TextAlign.Center,
                 color = Color.White
             )
