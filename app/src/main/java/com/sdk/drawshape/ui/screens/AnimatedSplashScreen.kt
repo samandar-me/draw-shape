@@ -70,7 +70,7 @@ fun Splash(alpha: Float) {
             )
             Spacer(modifier = Modifier.height(25.dp))
             Text(
-                text = "Draw Shapes",
+                text = "Draw Shape",
                 fontFamily = FontFamily.Cursive,
                 fontSize = 28.sp,
                 textAlign = TextAlign.Center,
