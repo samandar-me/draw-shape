@@ -13,7 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.NavController
 import com.sdk.drawshape.MainActivity
 import com.sdk.drawshape.drawbox.DrawBox
 import com.sdk.drawshape.drawbox.rememberDrawController

@@ -16,8 +16,6 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.viewinterop.AndroidView
-import com.sdk.drawshape.drawbox.createPath
-
 @Composable
 fun DrawBox(
     drawController: DrawController,

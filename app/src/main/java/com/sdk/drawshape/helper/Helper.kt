@@ -34,7 +34,6 @@ internal fun activityChooser(uri: Uri?) = Intent.createChooser(Intent().apply {
     data = uri
 }, "Select Gallery App")
 
-//writing files to storage via scope and normal manner acc. to Api level
 internal fun Context.saveImage(bitmap: Bitmap): Uri? {
     var uri: Uri? = null
     try {
@@ -69,7 +68,6 @@ internal fun Context.saveImage(bitmap: Bitmap): Uri? {
         return uri
     } catch (e: java.lang.Exception) {
         if (uri != null) {
-            // Don't leave an orphan entry in the MediaStore
             contentResolver.delete(uri, null, null)
         }
         throw e
