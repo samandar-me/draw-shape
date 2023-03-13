@@ -1,27 +1,30 @@
 package com.sdk.drawshape.ui.components
 
-import android.widget.SeekBar
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.*
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.rememberScrollableState
+import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.graphics.BlendModeColorFilterCompat
-import androidx.core.graphics.BlendModeCompat
+import com.github.krottv.compose.sliders.DefaultThumb
+import com.github.krottv.compose.sliders.DefaultTrack
+import com.github.krottv.compose.sliders.SliderValueHorizontal
 import com.sdk.drawshape.R
 import com.sdk.drawshape.drawbox.DrawController
 
@@ -36,15 +39,24 @@ fun ControlsBar(
     redoVisibility: MutableState<Boolean>,
     colorValue: MutableState<Color>,
     bgColorValue: MutableState<Color>,
-    sizeValue: MutableState<Int>
+//    sizeValue: MutableState<Int>,
+    onBottomSwipe: () -> Unit,
 ) {
-    Row(modifier = Modifier.padding(12.dp), horizontalArrangement = Arrangement.SpaceAround) {
-        MenuItems(
-            R.drawable.ic_download,
-            "download",
-            if (undoVisibility.value) MaterialTheme.colors.primary else MaterialTheme.colors.primaryVariant
-        ) {
-            if (undoVisibility.value) onDownloadClick()
+    var offset by remember { mutableStateOf(0f) }
+    if (offset > 200) {
+        onBottomSwipe()
+        offset = 0f
+    }
+    Row(
+        horizontalArrangement = Arrangement.SpaceAround,
+        modifier = Modifier.scrollable(orientation = Orientation.Vertical,
+            state = rememberScrollableState { delta ->
+                offset += delta
+                delta
+            })
+    ) {
+        MenuItems(R.drawable.ic_size, "stroke size", MaterialTheme.colors.primary) {
+            onSizeClick()
         }
         MenuItems(
             R.drawable.ic_undo,
@@ -73,8 +85,12 @@ fun ControlsBar(
         MenuItems(R.drawable.ic_color, "stroke color", colorValue.value, border = true) {
             onColorClick()
         }
-        MenuItems(R.drawable.ic_size, "stroke size", MaterialTheme.colors.primary) {
-            onSizeClick()
+        MenuItems(
+            R.drawable.ic_download,
+            "download",
+            if (undoVisibility.value) MaterialTheme.colors.primary else MaterialTheme.colors.primaryVariant
+        ) {
+            if (undoVisibility.value) onDownloadClick()
         }
     }
 }
@@ -85,7 +101,7 @@ fun RowScope.MenuItems(
     desc: String,
     colorTint: Color,
     border: Boolean = false,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     val modifier = Modifier.size(24.dp)
     IconButton(
@@ -96,9 +112,7 @@ fun RowScope.MenuItems(
             contentDescription = desc,
             tint = colorTint,
             modifier = if (border) modifier.border(
-                0.5.dp,
-                Color.Gray,
-                shape = CircleShape
+                0.5.dp, Color.Gray, shape = CircleShape
             ) else modifier
         )
     }
@@ -109,58 +123,86 @@ fun CustomSeekbar(
     isVisible: Boolean,
     max: Int = 200,
     progress: Int = max,
-    progressColor: Int,
-    thumbColor: Int,
-    onProgressChanged: (Int) -> Unit
+    thumbColor: Color,
+    onBottomSwipe: () -> Unit,
+    onProgressChanged: (Int) -> Unit,
 ) {
+    var offset by remember { mutableStateOf(0f) }
+    if (offset > 200) {
+        onBottomSwipe()
+        offset = 0f
+    }
     val density = LocalDensity.current
-    AnimatedVisibility(
-        visible = isVisible,
-        enter = slideInVertically {
-            with(density) { -40.dp.roundToPx() }
-        } + expandVertically(
-            expandFrom = Alignment.Top
-        ) + fadeIn(
-            initialAlpha = 0.3f
-        ),
-        exit = slideOutVertically() + shrinkVertically() + fadeOut()
-    ) {
-        val context = LocalContext.current
+    AnimatedVisibility(visible = isVisible, enter = slideInVertically {
+        with(density) { -40.dp.roundToPx() }
+    } + expandVertically(
+        expandFrom = Alignment.Top
+    ) + fadeIn(
+        initialAlpha = 0.3f
+    ), exit = slideOutVertically() + shrinkVertically() + fadeOut()) {
+        var sliderPosition by remember { mutableStateOf(0f) }
+        LaunchedEffect(Unit) {
+            sliderPosition = progress.toFloat()
+        }
+        val thumbSize = sliderPosition / 2
         Column(
             modifier = Modifier
-                .height(100.dp)
-                .fillMaxWidth(),
-            verticalArrangement = Arrangement.SpaceEvenly
+                .height(150.dp)
+                .fillMaxWidth()
+                .scrollable(
+                    orientation = Orientation.Vertical,
+                    state = rememberScrollableState { delta ->
+                        offset += delta
+                        delta
+                    }), verticalArrangement = Arrangement.SpaceEvenly
         ) {
             Text(text = "Stroke Width", modifier = Modifier.padding(12.dp, 0.dp, 0.dp, 0.dp))
-            AndroidView(
-                { SeekBar(context) },
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                it.progressDrawable.colorFilter =
-                    BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
-                        progressColor,
-                        BlendModeCompat.SRC_ATOP
+            SliderValueHorizontal(modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 10.dp),
+                value = sliderPosition,
+                onValueChange = {
+                    sliderPosition = it
+                },
+                valueRange = 10f..max.toFloat(),
+                onValueChangeFinished = { onProgressChanged(sliderPosition.toInt()) },
+                thumb = {
+                        modifier: Modifier,
+                        offset: Dp,
+                        interactionSource: MutableInteractionSource,
+                        enabled: Boolean,
+                        thumbSize: DpSize,
+                    ->
+                    DefaultThumb(
+                        modifier,
+                        offset,
+                        interactionSource,
+                        enabled,
+                        thumbSize,
+                        color = thumbColor,
+                        scaleOnPress = 1.1f
                     )
-                it.thumb.colorFilter =
-                    BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
-                        thumbColor,
-                        BlendModeCompat.SRC_ATOP
+                },
+                thumbSizeInDp = DpSize(thumbSize.dp, thumbSize.dp),
+                track = {
+                        modifier: Modifier,
+                        fraction: Float,
+                        interactionSource: MutableInteractionSource,
+                        tickFractions: List<Float>,
+                        enabled: Boolean,
+                    ->
+
+                    DefaultTrack(
+                        modifier,
+                        fraction,
+                        interactionSource,
+                        tickFractions,
+                        enabled,
+                        height = 8.dp,
+                        colorTrack = Color.Gray.copy(alpha = 0.6f),
+                        colorProgress = MaterialTheme.colors.primary
                     )
-                it.max = max
-                it.progress = progress
-                it.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-                    override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
-
-                    }
-
-                    override fun onStartTrackingTouch(p0: SeekBar?) {}
-                    override fun onStopTrackingTouch(p0: SeekBar?) {
-                        onProgressChanged(p0?.progress ?: it.progress)
-                    }
                 })
-            }
         }
     }
 }

@@ -3,7 +3,6 @@ package com.sdk.drawshape.drawbox
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -16,13 +15,14 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.viewinterop.AndroidView
+
 @Composable
 fun DrawBox(
     drawController: DrawController,
-    modifier: Modifier = Modifier.fillMaxSize(),
+    modifier: Modifier = Modifier,
     backgroundColor: Color = MaterialTheme.colors.background,
     bitmapCallback: (ImageBitmap?, Throwable?) -> Unit,
-    trackHistory: (undoCount: Int, redoCount: Int) -> Unit = { _, _ -> }
+    trackHistory: (undoCount: Int, redoCount: Int) -> Unit = { _, _ -> },
 ) = AndroidView(
     factory = {
         ComposeView(it).apply {

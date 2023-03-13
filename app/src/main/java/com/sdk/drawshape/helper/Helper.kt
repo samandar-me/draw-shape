@@ -1,5 +1,6 @@
 package com.sdk.drawshape.helper
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ContentValues
 import android.content.Context
@@ -15,11 +16,15 @@ import androidx.core.content.ContextCompat
 import com.sdk.drawshape.local.PERMISSION_CODE
 import com.sdk.drawshape.local.permissions
 import java.io.File
+
 internal fun Activity.checkAndAskPermission(continueNext: () -> Unit) {
-    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P && ContextCompat.checkSelfPermission(this,
-            permissions[0]) != PackageManager.PERMISSION_GRANTED
+    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P && ContextCompat.checkSelfPermission(
+            this,
+            permissions[0]
+        ) != PackageManager.PERMISSION_GRANTED
     ) {
-        ActivityCompat.requestPermissions(this,
+        ActivityCompat.requestPermissions(
+            this,
             permissions,
             PERMISSION_CODE
         )
@@ -28,6 +33,7 @@ internal fun Activity.checkAndAskPermission(continueNext: () -> Unit) {
     continueNext()
 }
 
+@SuppressLint("IntentReset")
 internal fun activityChooser(uri: Uri?) = Intent.createChooser(Intent().apply {
     type = "image/*"
     action = Intent.ACTION_VIEW

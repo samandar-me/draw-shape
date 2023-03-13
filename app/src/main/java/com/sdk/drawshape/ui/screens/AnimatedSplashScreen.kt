@@ -31,13 +31,13 @@ fun AnimatedSplashScreen(navController: NavHostController) {
     val alphaAnim = animateFloatAsState(
         targetValue = if (startAnimation) 1f else 0f,
         animationSpec = tween(
-            durationMillis = 2500
+            durationMillis = 1000
         )
     )
 
     LaunchedEffect(key1 = true) {
         startAnimation = true
-        delay(2500)
+        delay(1000)
         navController.popBackStack()
         navController.navigate(Screen.Home.route)
     }

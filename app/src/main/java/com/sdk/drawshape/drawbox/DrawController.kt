@@ -23,7 +23,7 @@ class DrawController internal constructor(val trackHistory: (undoCount: Int, red
 
     fun trackHistory(
         scope: CoroutineScope,
-        trackHistory: (undoCount: Int, redoCount: Int) -> Unit
+        trackHistory: (undoCount: Int, redoCount: Int) -> Unit,
     ) {
         historyTracker
             .onEach { trackHistory(_undoPathList.size, _redoPathList.size) }
@@ -49,9 +49,9 @@ class DrawController internal constructor(val trackHistory: (undoCount: Int, red
     var bgColor by mutableStateOf(Color.Black)
         private set
 
-    fun changeOpacity(value: Float) {
-        opacity = value
-    }
+//    fun changeOpacity(value: Float) {
+//        opacity = value
+//    }
 
     fun changeColor(value: Color) {
         color = value
@@ -65,15 +65,14 @@ class DrawController internal constructor(val trackHistory: (undoCount: Int, red
         strokeWidth = value
     }
 
-    fun importPath(drawBoxPayLoad: DrawBoxPayLoad) {
-        reset()
-        bgColor = drawBoxPayLoad.bgColor
-        _undoPathList.addAll(drawBoxPayLoad.path)
-        _historyTracker.tryEmit("${_undoPathList.size}")
-    }
+//    fun importPath(drawBoxPayLoad: DrawBoxPayLoad) {
+//        reset()
+//        bgColor = drawBoxPayLoad.bgColor
+//        _undoPathList.addAll(drawBoxPayLoad.path)
+//        _historyTracker.tryEmit("${_undoPathList.size}")
+//    }
 
-    fun exportPath() = DrawBoxPayLoad(bgColor, pathList.toList())
-
+//    fun exportPath() = DrawBoxPayLoad(bgColor, pathList.toList())
 
     fun unDo() {
         if (_undoPathList.isNotEmpty()) {
@@ -122,7 +121,7 @@ class DrawController internal constructor(val trackHistory: (undoCount: Int, red
     fun trackBitmaps(
         it: View,
         coroutineScope: CoroutineScope,
-        onCaptured: (ImageBitmap?, Throwable?) -> Unit
+        onCaptured: (ImageBitmap?, Throwable?) -> Unit,
     ) = bitmapGenerators
         .mapNotNull { config -> it.drawBitmapFromView(it.context, config) }
         .onEach { bitmap -> onCaptured(bitmap.asImageBitmap(), null) }

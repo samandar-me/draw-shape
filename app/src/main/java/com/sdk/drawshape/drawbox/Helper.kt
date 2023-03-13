@@ -32,7 +32,7 @@ data class PathWrapper(
     val alpha: Float = 1f
 )
 
-data class DrawBoxPayLoad(val bgColor: Color, val path: List<PathWrapper>)
+//data class DrawBoxPayLoad(val bgColor: Color, val path: List<PathWrapper>)
 
 fun createPath(points: List<Offset>) = Path().apply {
     if (points.size > 1) {

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "304612209795",
+    "project_id": "drawshape-c9a4c",
+    "storage_bucket": "drawshape-c9a4c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:304612209795:android:e287ae3fd1685098e417b6",
+        "android_client_info": {
+          "package_name": "com.sdk.drawshape"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "304612209795-59u9cgkcuq6m1tlh7v2bsecqkoemdd3l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCAcudX5WwfIvCOyRYYYQ_nY4ESA8ioCkk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "304612209795-59u9cgkcuq6m1tlh7v2bsecqkoemdd3l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
